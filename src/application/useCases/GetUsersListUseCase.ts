@@ -1,0 +1,46 @@
+import { AuthRepository } from '../../domain/interfaces/repositories/AuthRepository'
+import { AuthError, ErrorType } from '../../errors/AuthError'
+import { AWSAmplifyAuthRepository } from '../../infrastructure/AWSCognitoRepository'
+import { Request } from 'express'
+
+interface GetUsersListExecuteByUsernameUseCaseParams {
+  username: string
+  email?: never
+}
+
+interface GetUsersListExecuteByEmailUseCaseParams {
+  email: string
+  username?: never
+}
+
+export type GetUsersListExecutelUseCaseParams = GetUsersListExecuteByUsernameUseCaseParams | GetUsersListExecuteByEmailUseCaseParams
+
+export class GetUsersListUseCase {
+  #authRepository
+
+  constructor({ authRepository }: { authRepository: AuthRepository }) {
+    this.#authRepository = authRepository
+  }
+
+  static create({ req }: { req: Request }) {
+    return new GetUsersListUseCase({
+      authRepository: AWSAmplifyAuthRepository.create({ req }),
+    })
+  }
+
+  async execute({ username, email }: GetUsersListExecutelUseCaseParams) {
+    if (username) {
+      return this.#authRepository.getUsersList({ username })
+    }
+
+    if (email) {
+      return this.#authRepository.getUsersList({ email })
+    }
+
+    throw AuthError.create({
+      message: `[${GetUsersListUseCase.name}#execute] Invalid parameters`,
+      type: ErrorType.GET_USERS_LIST,
+      status: 400,
+    })
+  }
+}
