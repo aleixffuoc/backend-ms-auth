@@ -1,4 +1,3 @@
-import { Request } from 'express'
 import { AuthRepository } from '../../domain/interfaces/repositories/AuthRepository'
 import { AWSAmplifyAuthRepository } from '../../infrastructure/AWSCognitoRepository'
 
@@ -9,9 +8,9 @@ export class ChangePasswordUseCase {
     this.#authRepository = authRepository
   }
 
-  static create({ req }: { req: Request }) {
+  static create() {
     return new ChangePasswordUseCase({
-      authRepository: AWSAmplifyAuthRepository.create({ req }),
+      authRepository: AWSAmplifyAuthRepository.create(),
     })
   }
 

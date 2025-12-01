@@ -1,6 +1,5 @@
 import { AuthRepository } from '../../domain/interfaces/repositories/AuthRepository'
 import { AWSAmplifyAuthRepository } from '../../infrastructure/AWSCognitoRepository'
-import { Request } from 'express'
 
 export class GetUserUseCase {
   #authRepository
@@ -9,9 +8,9 @@ export class GetUserUseCase {
     this.#authRepository = authRepository
   }
 
-  static create({ req }: { req: Request }) {
+  static create() {
     return new GetUserUseCase({
-      authRepository: AWSAmplifyAuthRepository.create({ req }),
+      authRepository: AWSAmplifyAuthRepository.create(),
     })
   }
 

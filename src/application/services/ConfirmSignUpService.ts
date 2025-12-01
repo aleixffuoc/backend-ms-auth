@@ -1,8 +1,6 @@
-import { Request } from 'express'
 import { UsernameValueObject } from '../../domain/valueObjects/UsernameValueObject'
 import { ConfirmSignUpUseCase } from '../useCases/ConfirmSignUpUseCase'
 import { GetUserAdminUseCase } from '../useCases/GetUserAdminUseCase'
-import { publishMessage, EXCHANGES, ROUTINGKEYS } from '@anandasalut/be-message-bus'
 
 export class ConfirmSignUpService {
   #confirmSignUpUseCase
@@ -13,9 +11,9 @@ export class ConfirmSignUpService {
     this.#getUserAdminUseCase = params.getUserAdminUseCase
   }
 
-  static create({ req }: { req: Request }) {
-    const confirmSignUpUseCase = ConfirmSignUpUseCase.create({ req })
-    const getUserAdminUseCase = GetUserAdminUseCase.create({ req })
+  static create() {
+    const confirmSignUpUseCase = ConfirmSignUpUseCase.create()
+    const getUserAdminUseCase = GetUserAdminUseCase.create()
 
     return new ConfirmSignUpService({ confirmSignUpUseCase, getUserAdminUseCase })
   }
@@ -25,15 +23,6 @@ export class ConfirmSignUpService {
 
     await this.#confirmSignUpUseCase.execute({ username: username.value, confirmationCode: confirmationCode })
 
-    const userResponse = await this.#getUserAdminUseCase.execute({ username: username.value })
-
-    publishMessage({
-      exchange: EXCHANGES.AUTH,
-      routingKey: ROUTINGKEYS.AUTH_USER_CONFIRMED,
-      message: {
-        type: ROUTINGKEYS.AUTH_USER_CONFIRMED,
-        userId: userResponse.userId,
-      },
-    })
+    await this.#getUserAdminUseCase.execute({ username: username.value })
   }
 }

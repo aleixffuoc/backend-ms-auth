@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { LoginMFAUseCase } from '../../application/useCases/LoginMFAUseCase'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
-import { LoginMFAUseCase } from '../../application/useCases/LoginMFAUseCase'
 
 export class LoginMFAHTTPController {
   constructor() {}
@@ -13,7 +13,7 @@ export class LoginMFAHTTPController {
   async execute({ req, res, next }: { req: Request; res: Response; next: NextFunction }) {
     try {
       const { username, email, sessionToken, code } = req.body
-      const response = await LoginMFAUseCase.create({ req }).execute({
+      const response = await LoginMFAUseCase.create().execute({
         username,
         email,
         sessionToken,

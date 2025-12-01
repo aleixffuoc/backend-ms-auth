@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { ForgotPasswordUseCase } from '../../application/useCases/ForgotPasswordUseCase'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
-import { ForgotPasswordUseCase } from '../../application/useCases/ForgotPasswordUseCase'
 
 export class ForgotPasswordHTTPController {
   static create = () => {
@@ -11,7 +11,7 @@ export class ForgotPasswordHTTPController {
   async execute({ req, res, next }: { req: Request; res: Response; next: NextFunction }) {
     try {
       const { username } = req.body
-      await ForgotPasswordUseCase.create({ req }).execute({
+      await ForgotPasswordUseCase.create().execute({
         username,
       })
 

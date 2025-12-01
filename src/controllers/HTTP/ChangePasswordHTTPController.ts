@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { ChangePasswordUseCase } from '../../application/useCases/ChangePasswordUseCase'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
-import { ChangePasswordUseCase } from '../../application/useCases/ChangePasswordUseCase'
 import { getAccessTokenFromHeaders } from '../helpers/getAccessTokenFromHeaders'
 
 export class ChangePasswordHTTPController {
@@ -14,7 +14,7 @@ export class ChangePasswordHTTPController {
       const { oldPassword, newPassword } = req.body
       const accessToken = getAccessTokenFromHeaders(req) || ''
 
-      await ChangePasswordUseCase.create({ req }).execute({
+      await ChangePasswordUseCase.create().execute({
         accessToken,
         oldPassword,
         newPassword,

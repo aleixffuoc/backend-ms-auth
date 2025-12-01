@@ -1,8 +1,7 @@
+import { AuthError, ErrorType } from '../../errors/AuthError'
 import { GenerateMFACodeUseCase } from '../useCases/GenerateMFACodeUseCase'
-import { Request } from 'express'
 import { GenerateTOTPQRUseCase } from '../useCases/GenerateTOTPQRUseCase'
 import { GetUserUseCase } from '../useCases/GetUserUseCase'
-import { AuthError, ErrorType } from '../../errors/AuthError'
 
 export class GenerateTOTPQRService {
   #getUserUseCase
@@ -23,9 +22,9 @@ export class GenerateTOTPQRService {
     this.#generateTOTPQRUseCase = generateTOTPQRUseCase
   }
 
-  static create({ req }: { req: Request }) {
-    const getUserUseCase = GetUserUseCase.create({ req })
-    const generateMFACodeUseCase = GenerateMFACodeUseCase.create({ req })
+  static create() {
+    const getUserUseCase = GetUserUseCase.create()
+    const generateMFACodeUseCase = GenerateMFACodeUseCase.create()
     const generateTOTPQRUseCase = GenerateTOTPQRUseCase.create()
 
     return new GenerateTOTPQRService({ getUserUseCase, generateMFACodeUseCase, generateTOTPQRUseCase })

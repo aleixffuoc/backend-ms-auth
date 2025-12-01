@@ -1,8 +1,6 @@
-import { Request } from 'express'
-import { VerifyMFACodeUseCase } from '../useCases/VerifyMFACodeUseCase'
 import { EnableUserMFAUseCase } from '../useCases/EnableUserMFAUseCase'
 import { GetUserUseCase } from '../useCases/GetUserUseCase'
-import { publishMessage, EXCHANGES, ROUTINGKEYS } from '@anandasalut/be-message-bus'
+import { VerifyMFACodeUseCase } from '../useCases/VerifyMFACodeUseCase'
 
 export class ActivateUserMFAService {
   #verifyMFACodeUseCase
@@ -23,10 +21,10 @@ export class ActivateUserMFAService {
     this.#getUserUseCase = getUserUseCase
   }
 
-  static create({ req }: { req: Request }) {
-    const verifyMFACodeUseCase = VerifyMFACodeUseCase.create({ req })
-    const enableMFAUseCase = EnableUserMFAUseCase.create({ req })
-    const getUserUseCase = GetUserUseCase.create({ req })
+  static create() {
+    const verifyMFACodeUseCase = VerifyMFACodeUseCase.create()
+    const enableMFAUseCase = EnableUserMFAUseCase.create()
+    const getUserUseCase = GetUserUseCase.create()
 
     return new ActivateUserMFAService({ verifyMFACodeUseCase, enableMFAUseCase, getUserUseCase })
   }
@@ -35,15 +33,6 @@ export class ActivateUserMFAService {
     await this.#verifyMFACodeUseCase.execute({ accessToken, verifyCode })
     await this.#enableMFAUseCase.execute({ accessToken })
 
-    const user = await this.#getUserUseCase.execute({ accessToken })
-
-    publishMessage({
-      exchange: EXCHANGES.AUTH,
-      routingKey: ROUTINGKEYS.AUTH_USER_MFA_ENABLED,
-      message: {
-        type: ROUTINGKEYS.AUTH_USER_MFA_ENABLED,
-        userId: user.userId,
-      },
-    })
+    await this.#getUserUseCase.execute({ accessToken })
   }
 }

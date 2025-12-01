@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { DisableUserMFAService } from '../../application/services/DisabelUserMFAService'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
 import { getAccessTokenFromHeaders } from '../helpers/getAccessTokenFromHeaders'
-import { DisableUserMFAService } from '../../application/services/DisabelUserMFAService'
 
 export class DisableUserMFAHTTPController {
   static create = () => {
@@ -12,7 +12,7 @@ export class DisableUserMFAHTTPController {
   async execute({ req, res, next }: { req: Request; res: Response; next: NextFunction }) {
     try {
       const accessToken = getAccessTokenFromHeaders(req) || ''
-      await DisableUserMFAService.create({ req }).execute({
+      await DisableUserMFAService.create().execute({
         accessToken,
       })
 

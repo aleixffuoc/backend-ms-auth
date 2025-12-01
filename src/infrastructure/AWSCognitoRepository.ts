@@ -1,27 +1,3 @@
-import { Request } from 'express'
-import { CognitoJwtVerifier } from 'aws-jwt-verify'
-import { AuthError, ErrorType } from '../errors/AuthError'
-import {
-  AuthRepository,
-  ChangePasswordParams,
-  ConfirmForgotPasswordParams,
-  ConfirmSignUpParams,
-  DeleteUserAdminParams,
-  DeleteUserParams,
-  EnableUserMFAParams,
-  ForgotPasswordParams,
-  GenerateMFACodeParams,
-  GetUserAdminParams,
-  GetUserParams,
-  GetUsersListParams,
-  LoginMFAParams,
-  LoginParams,
-  RefreshTokenParams,
-  ResendSignUpCodeParams,
-  SignUpParams,
-  verifyAccessTokenParams,
-  VerifyMFACodeParams,
-} from '../domain/interfaces/repositories/AuthRepository'
 import {
   AdminDeleteUserCommand,
   AdminGetUserCommand,
@@ -43,23 +19,44 @@ import {
   SignUpCommand,
   VerifySoftwareTokenCommand,
 } from '@aws-sdk/client-cognito-identity-provider'
-import { getAWSClientSecretFromHeaders } from './helpers/getAWSClientSecretFromHeaders'
-import { generateSecretHash } from './helpers/generateSecretHash'
+import { CognitoJwtVerifier } from 'aws-jwt-verify'
+import {
+  AuthRepository,
+  ChangePasswordParams,
+  ConfirmForgotPasswordParams,
+  ConfirmSignUpParams,
+  DeleteUserAdminParams,
+  DeleteUserParams,
+  EnableUserMFAParams,
+  ForgotPasswordParams,
+  GenerateMFACodeParams,
+  GetUserAdminParams,
+  GetUserParams,
+  GetUsersListParams,
+  LoginMFAParams,
+  LoginParams,
+  RefreshTokenParams,
+  ResendSignUpCodeParams,
+  SignUpParams,
+  verifyAccessTokenParams,
+  VerifyMFACodeParams,
+} from '../domain/interfaces/repositories/AuthRepository'
+import { AuthError, ErrorType } from '../errors/AuthError'
 
 export class AWSAmplifyAuthRepository implements AuthRepository {
   #cognitoSession
-  #clientSecret
   #clientId
   #userPoolId
 
-  constructor({ cognitoSession, clientSecret }: { cognitoSession: CognitoIdentityProviderClient; clientSecret: string }) {
+  constructor({ cognitoSession }: { cognitoSession: CognitoIdentityProviderClient }) {
     this.#cognitoSession = cognitoSession
-    this.#clientSecret = clientSecret
     this.#clientId = process.env.AWS_USER_POOL_CLIENT_ID || ''
     this.#userPoolId = process.env.AWS_USER_POOL_ID || ''
   }
 
-  static create({ req }: { req: Request }) {
+  static create() {
+    console.log('AWS_USER_ACCESS_KEY_ID', process.env.AWS_USER_ACCESS_KEY_ID)
+    console.log('AWS_USER_ACCESS_SECRET_KEY', process.env.AWS_USER_ACCESS_SECRET_KEY)
     const cognitoSession = new CognitoIdentityProviderClient({
       region: process.env.AWS_USER_REGION,
       credentials: {
@@ -67,9 +64,8 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
         secretAccessKey: process.env.AWS_USER_ACCESS_SECRET_KEY || '',
       },
     })
-    const clientSecret = getAWSClientSecretFromHeaders(req) || ''
 
-    return new AWSAmplifyAuthRepository({ cognitoSession, clientSecret })
+    return new AWSAmplifyAuthRepository({ cognitoSession })
   }
 
   async verifyAccessToken({ accessToken }: verifyAccessTokenParams) {
@@ -87,7 +83,6 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
       ClientId: this.#clientId,
       Username: username,
       Password: password,
-      SecretHash: generateSecretHash({ clientId: this.#clientId, clientSecret: this.#clientSecret, username: username }),
       UserAttributes: [
         {
           Name: 'email',
@@ -111,7 +106,6 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
     const resendSignUpCode = new ResendConfirmationCodeCommand({
       ClientId: this.#clientId,
       Username: username,
-      SecretHash: generateSecretHash({ clientId: this.#clientId, clientSecret: this.#clientSecret, username: username }),
     })
 
     await this.#cognitoSession.send(resendSignUpCode)
@@ -122,7 +116,6 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
       ClientId: this.#clientId,
       Username: username,
       ConfirmationCode: confirmationCode,
-      SecretHash: generateSecretHash({ clientId: this.#clientId, clientSecret: this.#clientSecret, username: username }),
     })
 
     await this.#cognitoSession.send(confirmSignUp)
@@ -131,11 +124,10 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
   async login({ username, email, password }: LoginParams) {
     const login = new InitiateAuthCommand({
       ClientId: this.#clientId,
-      AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
+      AuthFlow: AuthFlowType.USER_SRP_AUTH,
       AuthParameters: {
         USERNAME: username || email,
         PASSWORD: password,
-        SECRET_HASH: generateSecretHash({ clientId: this.#clientId, clientSecret: this.#clientSecret, username: username || email }),
       },
     })
 
@@ -230,7 +222,6 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
       ChallengeResponses: {
         USERNAME: username || email,
         SOFTWARE_TOKEN_MFA_CODE: code,
-        SECRET_HASH: generateSecretHash({ clientId: this.#clientId, clientSecret: this.#clientSecret, username: username || email }),
       },
       Session: sessionToken,
     })
@@ -408,13 +399,12 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
     return { username: Username, email, userId: sub, isMFAEnabled }
   }
 
-  async refreshToken({ username, refreshToken }: RefreshTokenParams) {
+  async refreshToken({ refreshToken }: RefreshTokenParams) {
     const refreshTokenCommand = new InitiateAuthCommand({
       ClientId: this.#clientId,
       AuthFlow: AuthFlowType.REFRESH_TOKEN_AUTH,
       AuthParameters: {
         REFRESH_TOKEN: refreshToken,
-        SECRET_HASH: generateSecretHash({ clientId: this.#clientId, clientSecret: this.#clientSecret, username }),
       },
     })
 
@@ -455,7 +445,6 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
     const forgotPassword = new ForgotPasswordCommand({
       ClientId: this.#clientId,
       Username: username,
-      SecretHash: generateSecretHash({ clientId: this.#clientId, clientSecret: this.#clientSecret, username }),
     })
 
     await this.#cognitoSession.send(forgotPassword)
@@ -467,7 +456,6 @@ export class AWSAmplifyAuthRepository implements AuthRepository {
       Username: username,
       ConfirmationCode: confirmationCode,
       Password: password,
-      SecretHash: generateSecretHash({ clientId: this.#clientId, clientSecret: this.#clientSecret, username }),
     })
 
     await this.#cognitoSession.send(confirmForgotPassword)

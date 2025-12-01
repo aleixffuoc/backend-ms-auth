@@ -1,6 +1,5 @@
 import { AuthRepository } from '../../domain/interfaces/repositories/AuthRepository'
 import { AWSAmplifyAuthRepository } from '../../infrastructure/AWSCognitoRepository'
-import { Request } from 'express'
 
 export class EnableUserMFAUseCase {
   #authRepository
@@ -9,9 +8,9 @@ export class EnableUserMFAUseCase {
     this.#authRepository = authRepository
   }
 
-  static create({ req }: { req: Request }) {
+  static create() {
     return new EnableUserMFAUseCase({
-      authRepository: AWSAmplifyAuthRepository.create({ req }),
+      authRepository: AWSAmplifyAuthRepository.create(),
     })
   }
 

@@ -48,7 +48,6 @@ export interface ResendSignUpCodeParams {
 
 // Refresh Token interfaces
 export interface RefreshTokenParams {
-  username: string
   refreshToken: string
 }
 export interface RefreshTokenResponse {

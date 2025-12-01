@@ -1,5 +1,3 @@
-import { Request } from 'express'
-import { publishMessage, EXCHANGES, ROUTINGKEYS } from '@anandasalut/be-message-bus'
 import { DisableUserMFAUseCase } from '../useCases/DisableUserMFA'
 import { GetUserUseCase } from '../useCases/GetUserUseCase'
 
@@ -12,9 +10,9 @@ export class DisableUserMFAService {
     this.#getUserUseCase = getUserUseCase
   }
 
-  static create({ req }: { req: Request }) {
-    const disableMFAUseCase = DisableUserMFAUseCase.create({ req })
-    const getUserUseCase = GetUserUseCase.create({ req })
+  static create() {
+    const disableMFAUseCase = DisableUserMFAUseCase.create()
+    const getUserUseCase = GetUserUseCase.create()
 
     return new DisableUserMFAService({ disableMFAUseCase, getUserUseCase })
   }
@@ -22,15 +20,6 @@ export class DisableUserMFAService {
   async execute({ accessToken }: { accessToken: string }) {
     await this.#disableMFAUseCase.execute({ accessToken })
 
-    const user = await this.#getUserUseCase.execute({ accessToken })
-
-    publishMessage({
-      exchange: EXCHANGES.AUTH,
-      routingKey: ROUTINGKEYS.AUTH_USER_MFA_DISABLED,
-      message: {
-        type: ROUTINGKEYS.AUTH_USER_MFA_DISABLED,
-        userId: user.userId,
-      },
-    })
+    await this.#getUserUseCase.execute({ accessToken })
   }
 }

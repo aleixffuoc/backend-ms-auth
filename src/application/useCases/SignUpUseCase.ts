@@ -3,7 +3,6 @@ import { UserEmailValueObject } from '../../domain/valueObjects/UserEmailValueOb
 import { UsernameValueObject } from '../../domain/valueObjects/UsernameValueObject'
 import { UserPasswordValueObject } from '../../domain/valueObjects/UserPasswordValueObject'
 import { AWSAmplifyAuthRepository } from '../../infrastructure/AWSCognitoRepository'
-import { Request } from 'express'
 
 interface SignUpUseCaseExecuteParams {
   password: UserPasswordValueObject
@@ -18,9 +17,9 @@ export class SignUpUseCase {
     this.#authRepository = authRepository
   }
 
-  static create({ req }: { req: Request }) {
+  static create() {
     return new SignUpUseCase({
-      authRepository: AWSAmplifyAuthRepository.create({ req }),
+      authRepository: AWSAmplifyAuthRepository.create(),
     })
   }
 

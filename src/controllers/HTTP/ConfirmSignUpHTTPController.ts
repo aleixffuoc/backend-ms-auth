@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express'
-import { AuthError, ErrorType } from '../../errors/AuthError'
-import { getErrorStatusByName } from '../errors/errorStatus'
+import { NextFunction, Request, Response } from 'express'
 import { ConfirmSignUpService } from '../../application/services/ConfirmSignUpService'
 import { UsernameValueObject } from '../../domain/valueObjects/UsernameValueObject'
+import { AuthError, ErrorType } from '../../errors/AuthError'
+import { getErrorStatusByName } from '../errors/errorStatus'
 
 export class ConfirmSignUpHTTPController {
   static create = () => {
@@ -13,7 +13,7 @@ export class ConfirmSignUpHTTPController {
     try {
       const { username, confirmationCode } = req.body
       const usernameVO = UsernameValueObject.create({ username })
-      await ConfirmSignUpService.create({ req }).execute({
+      await ConfirmSignUpService.create().execute({
         username: usernameVO,
         confirmationCode,
       })

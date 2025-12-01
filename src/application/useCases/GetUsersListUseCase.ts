@@ -1,7 +1,6 @@
 import { AuthRepository } from '../../domain/interfaces/repositories/AuthRepository'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { AWSAmplifyAuthRepository } from '../../infrastructure/AWSCognitoRepository'
-import { Request } from 'express'
 
 interface GetUsersListExecuteByUsernameUseCaseParams {
   username: string
@@ -22,9 +21,9 @@ export class GetUsersListUseCase {
     this.#authRepository = authRepository
   }
 
-  static create({ req }: { req: Request }) {
+  static create() {
     return new GetUsersListUseCase({
-      authRepository: AWSAmplifyAuthRepository.create({ req }),
+      authRepository: AWSAmplifyAuthRepository.create(),
     })
   }
 

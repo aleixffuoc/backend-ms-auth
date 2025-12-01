@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { RefreshTokenService } from '../../application/services/RefreshTokenService'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
-import { RefreshTokenService } from '../../application/services/RefreshTokenService'
 import { getAccessTokenFromHeaders } from '../helpers/getAccessTokenFromHeaders'
 
 export class RefreshTokenHTTPController {
@@ -11,8 +11,8 @@ export class RefreshTokenHTTPController {
     this.#refreshTokenService = refreshTokenService
   }
 
-  static create = ({ req }: { req: Request }) => {
-    const refreshTokenService = RefreshTokenService.create({ req })
+  static create = () => {
+    const refreshTokenService = RefreshTokenService.create()
     return new RefreshTokenHTTPController({ refreshTokenService })
   }
 

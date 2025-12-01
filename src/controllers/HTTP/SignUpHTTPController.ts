@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express'
-import { AuthError, ErrorType } from '../../errors/AuthError'
-import { getErrorStatusByName } from '../errors/errorStatus'
+import { NextFunction, Request, Response } from 'express'
 import { SignUpService } from '../../application/services/SignUpService'
 import { UserEmailValueObject } from '../../domain/valueObjects/UserEmailValueObject'
 import { UsernameValueObject } from '../../domain/valueObjects/UsernameValueObject'
 import { UserPasswordValueObject } from '../../domain/valueObjects/UserPasswordValueObject'
+import { AuthError, ErrorType } from '../../errors/AuthError'
+import { getErrorStatusByName } from '../errors/errorStatus'
 
 export class SignUpHTTPController {
   static create = () => {
@@ -18,7 +18,7 @@ export class SignUpHTTPController {
       const usernameVO = UsernameValueObject.create({ username })
       const passwordVO = UserPasswordValueObject.create({ password })
 
-      const response = await SignUpService.create({ req }).execute({
+      const response = await SignUpService.create().execute({
         email: emailVO,
         username: usernameVO,
         password: passwordVO,

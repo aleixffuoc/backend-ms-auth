@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { ResendSignUpUseCase } from '../../application/useCases/ResendSignUpCodeUseCase'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
-import { ResendSignUpUseCase } from '../../application/useCases/ResendSignUpCodeUseCase'
 
 export class ResendSignUpCodeHTTPController {
   constructor() {}
@@ -13,7 +13,7 @@ export class ResendSignUpCodeHTTPController {
   async execute({ req, res, next }: { req: Request; res: Response; next: NextFunction }) {
     try {
       const { username } = req.body
-      await ResendSignUpUseCase.create({ req }).execute({
+      await ResendSignUpUseCase.create().execute({
         username,
       })
 

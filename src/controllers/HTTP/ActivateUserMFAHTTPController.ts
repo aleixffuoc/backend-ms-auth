@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { ActivateUserMFAService } from '../../application/services/ActivateUserMFAService'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
 import { getAccessTokenFromHeaders } from '../helpers/getAccessTokenFromHeaders'
-import { ActivateUserMFAService } from '../../application/services/ActivateUserMFAService'
 
 export class ActivateUserMFAHTTPController {
   static create = () => {
@@ -14,7 +14,7 @@ export class ActivateUserMFAHTTPController {
       const { verifyCode } = req.body
       const accessToken = getAccessTokenFromHeaders(req) || ''
 
-      await ActivateUserMFAService.create({ req }).execute({
+      await ActivateUserMFAService.create().execute({
         accessToken,
         verifyCode,
       })

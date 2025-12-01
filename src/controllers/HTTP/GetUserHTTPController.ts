@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { GetUserUseCase } from '../../application/useCases/GetUserUseCase'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
-import { GetUserUseCase } from '../../application/useCases/GetUserUseCase'
 import { getAccessTokenFromHeaders } from '../helpers/getAccessTokenFromHeaders'
 
 export class GetUserHTTPController {
@@ -14,7 +14,7 @@ export class GetUserHTTPController {
   async execute({ req, res, next }: { req: Request; res: Response; next: NextFunction }) {
     try {
       const accessToken = getAccessTokenFromHeaders(req) || ''
-      const response = await GetUserUseCase.create({ req }).execute({ accessToken })
+      const response = await GetUserUseCase.create().execute({ accessToken })
 
       res.status(200).json(response)
     } catch (error: any) {

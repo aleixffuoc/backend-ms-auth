@@ -1,7 +1,6 @@
-import { GetUserUseCase } from '../useCases/GetUserUseCase'
-import { Request } from 'express'
-import { VerifyAccessTokenUseCase } from '../useCases/VerifyAccessTokenUseCase'
 import { AuthError, ErrorType } from '../../errors/AuthError'
+import { GetUserUseCase } from '../useCases/GetUserUseCase'
+import { VerifyAccessTokenUseCase } from '../useCases/VerifyAccessTokenUseCase'
 
 export class VerifyAccessTokenService {
   #verifyAccessTokenUseCase
@@ -18,9 +17,9 @@ export class VerifyAccessTokenService {
     this.#verifyAccessTokenUseCase = verifyAccessTokenUseCase
   }
 
-  static create({ req }: { req: Request }) {
-    const verifyAccessTokenUseCase = VerifyAccessTokenUseCase.create({ req })
-    const getUserUserCase = GetUserUseCase.create({ req })
+  static create() {
+    const verifyAccessTokenUseCase = VerifyAccessTokenUseCase.create()
+    const getUserUserCase = GetUserUseCase.create()
 
     return new VerifyAccessTokenService({ getUserUserCase, verifyAccessTokenUseCase })
   }

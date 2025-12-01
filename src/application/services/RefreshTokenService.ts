@@ -1,6 +1,5 @@
 import { GetUserUseCase } from '../useCases/GetUserUseCase'
 import { RefreshTokenUseCase } from '../useCases/RefreshTokenUseCase'
-import { Request } from 'express'
 
 export class RefreshTokenService {
   #refreshTokenUseCase
@@ -11,9 +10,9 @@ export class RefreshTokenService {
     this.#refreshTokenUseCase = refreshTokenUseCase
   }
 
-  static create({ req }: { req: Request }) {
-    const refreshTokenUseCase = RefreshTokenUseCase.create({ req })
-    const getUserUserCase = GetUserUseCase.create({ req })
+  static create() {
+    const refreshTokenUseCase = RefreshTokenUseCase.create()
+    const getUserUserCase = GetUserUseCase.create()
 
     return new RefreshTokenService({ getUserUserCase, refreshTokenUseCase })
   }

@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { GenerateTOTPQRService } from '../../application/services/GenerateTOTPQRService'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
 import { getAccessTokenFromHeaders } from '../helpers/getAccessTokenFromHeaders'
-import { GenerateTOTPQRService } from '../../application/services/GenerateTOTPQRService'
 
 export class GenerateTOTPQRHTTPController {
   static create = () => {
@@ -14,7 +14,7 @@ export class GenerateTOTPQRHTTPController {
       const { TOTPName } = req.body
       const accessToken = getAccessTokenFromHeaders(req) || ''
 
-      const response = await GenerateTOTPQRService.create({ req }).execute({ accessToken, TOTPName })
+      const response = await GenerateTOTPQRService.create().execute({ accessToken, TOTPName })
 
       res.status(200).json({ QRImage: response })
     } catch (error: any) {

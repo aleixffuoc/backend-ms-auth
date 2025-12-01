@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { ConfirmForgotPasswordUseCase } from '../../application/useCases/ConfirmForgotPasswordUseCase'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
-import { ConfirmForgotPasswordUseCase } from '../../application/useCases/ConfirmForgotPasswordUseCase'
 
 export class ConfirmForgotPasswordHTTPController {
   static create = () => {
@@ -11,7 +11,7 @@ export class ConfirmForgotPasswordHTTPController {
   async execute({ req, res, next }: { req: Request; res: Response; next: NextFunction }) {
     try {
       const { username, confirmationCode, password } = req.body
-      await ConfirmForgotPasswordUseCase.create({ req }).execute({
+      await ConfirmForgotPasswordUseCase.create().execute({
         username,
         confirmationCode,
         password,

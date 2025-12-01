@@ -1,11 +1,10 @@
-import { Request } from 'express'
-import { SignUpUseCase } from '../useCases/SignUpUseCase'
-import { GetUsersListUseCase } from '../useCases/GetUsersListUseCase'
+import { UserEmailValueObject } from '../../domain/valueObjects/UserEmailValueObject'
+import { UsernameValueObject } from '../../domain/valueObjects/UsernameValueObject'
+import { UserPasswordValueObject } from '../../domain/valueObjects/UserPasswordValueObject'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { DeleteUserAdminUseCase } from '../useCases/DeleteUserAdminUseCase'
-import { UsernameValueObject } from '../../domain/valueObjects/UsernameValueObject'
-import { UserEmailValueObject } from '../../domain/valueObjects/UserEmailValueObject'
-import { UserPasswordValueObject } from '../../domain/valueObjects/UserPasswordValueObject'
+import { GetUsersListUseCase } from '../useCases/GetUsersListUseCase'
+import { SignUpUseCase } from '../useCases/SignUpUseCase'
 
 export class SignUpService {
   #getUsersListUserCase
@@ -18,10 +17,10 @@ export class SignUpService {
     this.#signUpUseCase = params.signUpUseCase
   }
 
-  static create({ req }: { req: Request }) {
-    const getUsersListUserCase = GetUsersListUseCase.create({ req })
-    const deleteUserAdminUseCase = DeleteUserAdminUseCase.create({ req })
-    const signUpUseCase = SignUpUseCase.create({ req })
+  static create() {
+    const getUsersListUserCase = GetUsersListUseCase.create()
+    const deleteUserAdminUseCase = DeleteUserAdminUseCase.create()
+    const signUpUseCase = SignUpUseCase.create()
 
     return new SignUpService({ getUsersListUserCase, deleteUserAdminUseCase, signUpUseCase })
   }

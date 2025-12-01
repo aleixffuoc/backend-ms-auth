@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { VerifyAccessTokenService } from '../../application/services/VerifyAccessTokenService'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
 import { getAccessTokenFromHeaders } from '../helpers/getAccessTokenFromHeaders'
-import { VerifyAccessTokenService } from '../../application/services/VerifyAccessTokenService'
 
 export class VerifyAccessTokenHTTPController {
   static create = () => {
@@ -14,7 +14,7 @@ export class VerifyAccessTokenHTTPController {
       const { userId } = req.body
       const accessToken = getAccessTokenFromHeaders(req) || ''
 
-      await VerifyAccessTokenService.create({ req }).execute({
+      await VerifyAccessTokenService.create().execute({
         accessToken,
         userId,
       })

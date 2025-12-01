@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import { DeleteUserUseCase } from '../../application/useCases/DeleteUSerUseCase'
 import { AuthError, ErrorType } from '../../errors/AuthError'
 import { getErrorStatusByName } from '../errors/errorStatus'
 import { getAccessTokenFromHeaders } from '../helpers/getAccessTokenFromHeaders'
-import { DeleteUserUseCase } from '../../application/useCases/DeleteUserUseCase'
 
 export class DeleteUserHTTPController {
   static create = () => {
@@ -12,7 +12,7 @@ export class DeleteUserHTTPController {
   async execute({ req, res, next }: { req: Request; res: Response; next: NextFunction }) {
     try {
       const accessToken = getAccessTokenFromHeaders(req) || ''
-      await DeleteUserUseCase.create({ req }).execute({
+      await DeleteUserUseCase.create().execute({
         accessToken,
       })
 
