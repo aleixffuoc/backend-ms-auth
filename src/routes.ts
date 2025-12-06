@@ -58,7 +58,7 @@ router.get('/auth/get-user', async (req, res, next) => {
 })
 
 router.post('/auth/refresh-token', async (req, res, next) => {
-  return RefreshTokenHTTPController.create({ req }).execute({ req, res, next })
+  return RefreshTokenHTTPController.create().execute({ req, res, next })
 })
 
 router.put('/auth/change-password', async (req, res, next) => {

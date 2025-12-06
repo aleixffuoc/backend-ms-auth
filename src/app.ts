@@ -23,7 +23,7 @@ app.use(cors())
 app.use(morgan('dev'))
 
 //Routes
-app.use(Routes)
+app.use('/api', Routes)
 
 //Port
 const PORT = 9001
